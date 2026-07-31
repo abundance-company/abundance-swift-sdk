@@ -1,0 +1,27 @@
+# XcodeGen spec. Generate the Xcode project with:
+#   brew install xcodegen && cd sdk/Examples/AbundanceSample && xcodegen
+name: AbundanceSample
+options:
+  bundleIdPrefix: com.abundance
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+packages:
+  AbundanceDeviceKit:
+    path: ../..
+targets:
+  AbundanceSample:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.abundance.sample
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: App/Info.plist
+    dependencies:
+      - package: AbundanceDeviceKit

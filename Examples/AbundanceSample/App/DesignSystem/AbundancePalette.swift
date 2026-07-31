@@ -1,0 +1,62 @@
+import SwiftUI
+
+/// Primitive color ramps from the canonical Abundance design system
+/// (abundance-design-system.vercel.app), ported verbatim. Prefer the semantic
+/// `AbundanceTheme` tokens in app code; reach for primitives only when defining
+/// new semantic tokens.
+public enum AbundancePalette {
+    // Neutral (warm grays)
+    public static let neutral0   = Color(hex: "#FAFAF9")
+    public static let neutral50  = Color(hex: "#FAFAFA")
+    public static let neutral100 = Color(hex: "#F4F4F4")
+    public static let neutral150 = Color(hex: "#ECECEC")
+    public static let neutral200 = Color(hex: "#E2E2E2")
+    public static let neutral300 = Color(hex: "#D4D3D3")
+    public static let neutral400 = Color(hex: "#A5A1A1")
+    public static let neutral450 = Color(hex: "#8C8888")
+    public static let neutral500 = Color(hex: "#747070")
+    public static let neutral600 = Color(hex: "#545151")
+    public static let neutral700 = Color(hex: "#423E3E")
+    public static let neutral800 = Color(hex: "#272626")
+    public static let neutral900 = Color(hex: "#1B1919")
+    public static let neutral950 = Color(hex: "#0F0D0D")
+
+    // Ocean (teal accent)
+    public static let ocean50  = Color(hex: "#F0FAFA")
+    public static let ocean100 = Color(hex: "#D4F0F0")
+    public static let ocean200 = Color(hex: "#A8E0E0")
+    public static let ocean300 = Color(hex: "#72CACA")
+    public static let ocean400 = Color(hex: "#3AADAD")
+    public static let ocean500 = Color(hex: "#07898C")
+    public static let ocean600 = Color(hex: "#07676A")
+    public static let ocean700 = Color(hex: "#054F52")
+    public static let ocean800 = Color(hex: "#033A3C")
+    public static let ocean900 = Color(hex: "#03201E")
+    public static let ocean950 = Color(hex: "#011412")
+
+    // Red (danger / record)
+    public static let red50  = Color(hex: "#FFF2F0")
+    public static let red100 = Color(hex: "#FFD9D4")
+    public static let red200 = Color(hex: "#FFB0A6")
+    public static let red300 = Color(hex: "#FF7D6E")
+    public static let red400 = Color(hex: "#F54A35")
+    public static let red500 = Color(hex: "#C41A01")
+    public static let red600 = Color(hex: "#A01500")
+    public static let red700 = Color(hex: "#7A0F00")
+    public static let red800 = Color(hex: "#540A00")
+    public static let red900 = Color(hex: "#300600")
+    public static let red950 = Color(hex: "#1A0300")
+
+    // Yellow (warning)
+    public static let yellow50  = Color(hex: "#FFFBEB")
+    public static let yellow100 = Color(hex: "#FEF3C4")
+    public static let yellow200 = Color(hex: "#FDE27A")
+    public static let yellow300 = Color(hex: "#FCD048")
+    public static let yellow400 = Color(hex: "#FBC430")
+    public static let yellow500 = Color(hex: "#FEBC21")
+    public static let yellow600 = Color(hex: "#D49508")
+    public static let yellow700 = Color(hex: "#A87700")
+    public static let yellow800 = Color(hex: "#7A5500")
+    public static let yellow900 = Color(hex: "#523800")
+    public static let yellow950 = Color(hex: "#342300")
+}
