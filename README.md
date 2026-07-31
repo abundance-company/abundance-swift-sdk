@@ -9,9 +9,9 @@ upload off to the device itself with Station.
 - **iOS 17+ / macOS 14+**, zero external dependencies
 - Device firmware ≥ 1.0.6 (Station endpoints require ≥ 1.1.0)
 
-The full reference (every type and method, with examples) is the companion
-page `abundance-swift-sdk-reference.html`; the wire contract it sits on is
-`a4-api-reference.html`.
+The full reference (every type and method, with examples) is at
+https://abundance.company/swift-sdk; the wire contract it sits on is
+documented at https://abundance.company/api.
 
 ## Install
 
