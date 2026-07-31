@@ -1,3 +1,4 @@
+![Thumbnail](./thumbnail.png)
 # AbundanceDeviceKit
 
 Swift client library for the Abundance device: pairing, recording control,
