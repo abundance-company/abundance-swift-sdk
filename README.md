@@ -1,5 +1,5 @@
 ![Thumbnail](./thumbnail.png)
-# AbundanceDeviceKit
+# Abundance Swift SDK
 
 Swift client library for the Abundance device: pairing, recording control,
 preview streaming, and session offload.
