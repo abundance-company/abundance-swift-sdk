@@ -8,13 +8,18 @@ actor DeviceConnection {
     private let session: URLSession
     private var token: String?
 
-    init(baseURL: URL, token: String?) {
+    init(baseURL: URL, token: String?, session: URLSession? = nil) {
         self.baseURL = baseURL
         self.token = token
+        if let session {
+            self.session = session
+            return
+        }
         let config = URLSessionConfiguration.ephemeral
         // The SoftAP has no internet; waiting for "connectivity" would stall
         // every call behind iOS's reachability heuristics.
         config.waitsForConnectivity = false
+        config.allowsCellularAccess = false
         self.session = URLSession(configuration: config)
     }
 
@@ -59,6 +64,46 @@ actor DeviceConnection {
             throw DeviceConnection.error(status: response.statusCode, body: data)
         }
         return (data, response)
+    }
+
+    func upload<T: Decodable & Sendable>(
+        _ path: String,
+        payload: Data,
+        headers: [String: String],
+        reportProgress: (@Sendable (Int64, Int64) -> Void)? = nil
+    ) async throws -> T {
+        var request = request("PUT", path, body: nil)
+        request.setValue(String(payload.count), forHTTPHeaderField: "Content-Length")
+        for (name, value) in headers {
+            request.setValue(value, forHTTPHeaderField: name)
+        }
+
+        let totalBytes = Int64(payload.count)
+        let data: Data
+        let response: URLResponse
+        do {
+            reportProgress?(0, totalBytes)
+            let progressDelegate = DeviceUploadProgressDelegate(reportProgress: reportProgress)
+            (data, response) = try await session.upload(
+                for: request,
+                from: payload,
+                delegate: progressDelegate
+            )
+            reportProgress?(totalBytes, totalBytes)
+        } catch {
+            throw AbundanceError.transport(error.localizedDescription)
+        }
+        guard let http = response as? HTTPURLResponse else {
+            throw AbundanceError.transport("non-HTTP response")
+        }
+        guard (200..<300).contains(http.statusCode) else {
+            throw DeviceConnection.error(status: http.statusCode, body: data)
+        }
+        do {
+            return try JSONDecoder.abundance.decode(T.self, from: data)
+        } catch {
+            throw AbundanceError.decoding(String(describing: error))
+        }
     }
 
     // MARK: - Request plumbing
@@ -124,5 +169,25 @@ actor DeviceConnection {
             return .device(envelope.deviceError)
         }
         return .unexpectedStatus(status)
+    }
+}
+
+
+private final class DeviceUploadProgressDelegate: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+    private let reportProgress: (@Sendable (Int64, Int64) -> Void)?
+
+    init(reportProgress: (@Sendable (Int64, Int64) -> Void)?) {
+        self.reportProgress = reportProgress
+    }
+
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didSendBodyData bytesSent: Int64,
+        totalBytesSent: Int64,
+        totalBytesExpectedToSend: Int64
+    ) {
+        guard totalBytesExpectedToSend > 0 else { return }
+        reportProgress?(totalBytesSent, totalBytesExpectedToSend)
     }
 }

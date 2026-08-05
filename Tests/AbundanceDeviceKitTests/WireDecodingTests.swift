@@ -107,6 +107,8 @@ final class WireDecodingTests: XCTestCase {
         XCTAssertEqual(ErrorCode("flux_capacitor"), .unknown("flux_capacitor"))
         XCTAssertEqual(ErrorCode("join_failed"), .joinFailed)
         XCTAssertEqual(ErrorCode("internal"), .internalError)
+        XCTAssertEqual(ErrorCode("update_already_attempted"), .updateAlreadyAttempted)
+        XCTAssertEqual(ErrorCode.updateAlreadyAttempted.rawValue, "update_already_attempted")
         XCTAssertEqual(ErrorCode.internalError.rawValue, "internal")
     }
 

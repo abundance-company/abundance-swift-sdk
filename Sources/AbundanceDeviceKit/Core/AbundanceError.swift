@@ -12,8 +12,10 @@ public enum AbundanceError: Error, Sendable {
     case unexpectedStatus(Int)
     case decoding(String)
     /// Raised client-side: downloaded bytes failed SHA-256 verification
-    /// against the manifest, before any ack was sent.
+    /// against published metadata, before SoftAP transfer.
     case hashMismatch(artifact: String, expected: String, computed: String)
+    /// APS offered firmware for a different hardware target.
+    case incompatibleFirmwareRelease(expectedBoard: String, actualBoard: String)
     /// The pre-recording clock-anchor exchange failed client-side (device
     /// rejected an anchor, non-monotonic clock, timestamp overflow).
     case clockSync(String)
@@ -54,6 +56,11 @@ public enum ErrorCode: Sendable, Hashable {
     case segmentActive
     case recordingActive
     case sdBusy
+    case updateTransferInProgress
+    case updateAlreadyAttempted
+    case signatureInvalid
+    case lengthRequired
+    case insufficientSpace
     case joinFailed
     case shaMismatch
     case csvShaMismatch
@@ -76,6 +83,11 @@ public enum ErrorCode: Sendable, Hashable {
         case "segment_active": self = .segmentActive
         case "recording_active": self = .recordingActive
         case "sd_busy": self = .sdBusy
+        case "update_transfer_in_progress": self = .updateTransferInProgress
+        case "update_already_attempted": self = .updateAlreadyAttempted
+        case "signature_invalid": self = .signatureInvalid
+        case "length_required": self = .lengthRequired
+        case "insufficient_space": self = .insufficientSpace
         case "join_failed": self = .joinFailed
         case "sha_mismatch": self = .shaMismatch
         case "csv_sha_mismatch": self = .csvShaMismatch
@@ -100,6 +112,11 @@ public enum ErrorCode: Sendable, Hashable {
         case .segmentActive: "segment_active"
         case .recordingActive: "recording_active"
         case .sdBusy: "sd_busy"
+        case .updateTransferInProgress: "update_transfer_in_progress"
+        case .updateAlreadyAttempted: "update_already_attempted"
+        case .signatureInvalid: "signature_invalid"
+        case .lengthRequired: "length_required"
+        case .insufficientSpace: "insufficient_space"
         case .joinFailed: "join_failed"
         case .shaMismatch: "sha_mismatch"
         case .csvShaMismatch: "csv_sha_mismatch"

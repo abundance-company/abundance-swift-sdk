@@ -70,6 +70,7 @@ public enum AbundanceDeviceFinder {
         let config = URLSessionConfiguration.ephemeral
         config.timeoutIntervalForRequest = 2
         config.waitsForConnectivity = false
+        config.allowsCellularAccess = false
         let session = URLSession(configuration: config)
         struct Health: Decodable {
             let deviceId: String
