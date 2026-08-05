@@ -11,6 +11,7 @@
 		1D14435C0AA346F8DDE4F774 /* AbundanceDeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 211EBA2D411DE02115281D86 /* AbundanceDeviceKit */; };
 		2243852E4A3DC29F8E1EFAED /* LocalLibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329021F5AD06EB41880188F5 /* LocalLibraryStore.swift */; };
 		2CE7F2F34FC7D8981D5B9FA8 /* TSDuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C81D79DE56B873ED8BD8C155 /* TSDuration.swift */; };
+		2F158922FC24EE83A32A4D52 /* FirmwareUpdateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADBAC5827E57D4FDABB5E8E /* FirmwareUpdateView.swift */; };
 		37C5F2BD0337D9F9EA3A3C30 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2AC6343808B8B1DACDBDD0 /* MainTabView.swift */; };
 		4B557204F06619CA0482ED05 /* RecordingTimerText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44E06B972BB489E109D3B4FA /* RecordingTimerText.swift */; };
 		4E9E6837634FDECC8557A98A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB5ECC9848A91F652A4C083B /* SettingsView.swift */; };
@@ -28,17 +29,28 @@
 		A60E5BE6FBFEB53514A6D3D4 /* DeviceDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E33D450E601B36051650D3 /* DeviceDetailsView.swift */; };
 		BDA4C08A1EBB57452AEE11CF /* LivePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D4E4B772B822522EE77D7BF /* LivePreviewView.swift */; };
 		C4E5B8212446F0247254F5CC /* CameraTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B774589307162CF7DBAB150E /* CameraTabView.swift */; };
+		D3E08A4DCA2CB6954D60CEEB /* FirmwareUpdateStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17493B5B7E1FDDA5792B47D /* FirmwareUpdateStateTests.swift */; };
 		DA17177EB64EA8928C96C846 /* RecordingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB02ABB8A036106ECE9126A /* RecordingsView.swift */; };
+		DB0DAEA7459036B1CB20E8E0 /* FirmwareUpdateState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513B01530C8468C2344049A6 /* FirmwareUpdateState.swift */; };
 		EF6471A2659759878A06014F /* PreviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 858DA475816FF7644A43DC84 /* PreviewModel.swift */; };
 		F5A844253DF68086DBC12177 /* SessionDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13C3CD90A285148117FD6840 /* SessionDisplay.swift */; };
 		FA3B8736AE7CFD256379512B /* LocalMediaServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9168105FFFCF3562D0E1261 /* LocalMediaServer.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		417C62875E11143B414CE7E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B1E8D0714EAFE4FBD91AD6D2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 092D8294899EE6B81AFD1569;
+			remoteInfo = AbundanceSample;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		046E83CC2D06AD05DEF155A4 /* AbundanceTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbundanceTheme.swift; sourceTree = "<group>"; };
 		09328AD350CF2AE99AB9F0C1 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		10281B33328BABB8F7F2DEA9 /* SessionThumbnailer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionThumbnailer.swift; sourceTree = "<group>"; };
-		1048A30B34DC7A16EC811518 /* sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sdk; path = ../..; sourceTree = SOURCE_ROOT; };
 		13C3CD90A285148117FD6840 /* SessionDisplay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDisplay.swift; sourceTree = "<group>"; };
 		2B5EF136A9BDE7236A4E216D /* DeviceStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceStore.swift; sourceTree = "<group>"; };
 		329021F5AD06EB41880188F5 /* LocalLibraryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalLibraryStore.swift; sourceTree = "<group>"; };
@@ -46,20 +58,25 @@
 		3D4E4B772B822522EE77D7BF /* LivePreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LivePreviewView.swift; sourceTree = "<group>"; };
 		44E06B972BB489E109D3B4FA /* RecordingTimerText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingTimerText.swift; sourceTree = "<group>"; };
 		44F12B0CDFDC40A57BB34144 /* RecordingPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingPlayerView.swift; sourceTree = "<group>"; };
+		513B01530C8468C2344049A6 /* FirmwareUpdateState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirmwareUpdateState.swift; sourceTree = "<group>"; };
 		541159A7D19D9867BD262073 /* AbundanceSampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbundanceSampleApp.swift; sourceTree = "<group>"; };
 		5BB4FD0FF6C3AB7CDCEC25A1 /* AbundancePalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbundancePalette.swift; sourceTree = "<group>"; };
 		5FB02ABB8A036106ECE9126A /* RecordingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsView.swift; sourceTree = "<group>"; };
 		6B2AC6343808B8B1DACDBDD0 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		793FAC5036A648AEA1FCC055 /* RadarSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadarSearchView.swift; sourceTree = "<group>"; };
+		80AD7F28C3D65C9CA6645FDE /* AbundanceSampleTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = AbundanceSampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		858DA475816FF7644A43DC84 /* PreviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewModel.swift; sourceTree = "<group>"; };
 		87FD7E3CD983DEC8330FBD4F /* AbundanceMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbundanceMetrics.swift; sourceTree = "<group>"; };
 		A85A7FAD6B5B48BA8380C05E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		B774589307162CF7DBAB150E /* CameraTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraTabView.swift; sourceTree = "<group>"; };
+		BADBAC5827E57D4FDABB5E8E /* FirmwareUpdateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirmwareUpdateView.swift; sourceTree = "<group>"; };
 		C81D79DE56B873ED8BD8C155 /* TSDuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSDuration.swift; sourceTree = "<group>"; };
 		CB5ECC9848A91F652A4C083B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		D872481A13B4E3C31058F205 /* AbundanceSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AbundanceSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E17493B5B7E1FDDA5792B47D /* FirmwareUpdateStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirmwareUpdateStateTests.swift; sourceTree = "<group>"; };
 		E54E7318D6CDFD27BC3B3E38 /* OffloadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffloadStore.swift; sourceTree = "<group>"; };
 		E5E33D450E601B36051650D3 /* DeviceDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDetailsView.swift; sourceTree = "<group>"; };
+		E6C8264D6C92607EEC833733 /* abundance-swift-sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "abundance-swift-sdk"; path = ../..; sourceTree = SOURCE_ROOT; };
 		EA4358F5E36BA27137BD1DDF /* AbundanceTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbundanceTypography.swift; sourceTree = "<group>"; };
 		F9168105FFFCF3562D0E1261 /* LocalMediaServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalMediaServer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -111,11 +128,20 @@
 			path = DesignSystem;
 			sourceTree = "<group>";
 		};
+		2FEED5F1851A46DB44E32E55 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				E17493B5B7E1FDDA5792B47D /* FirmwareUpdateStateTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
 		7E716A05A522420D1C93BBD0 = {
 			isa = PBXGroup;
 			children = (
 				1A91B15A787DDD510688C70D /* App */,
 				DA926A9DD81185C2BD496813 /* Packages */,
+				2FEED5F1851A46DB44E32E55 /* Tests */,
 				BE86BC6909D5A47D84EC3911 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -160,6 +186,7 @@
 			isa = PBXGroup;
 			children = (
 				D872481A13B4E3C31058F205 /* AbundanceSample.app */,
+				80AD7F28C3D65C9CA6645FDE /* AbundanceSampleTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -167,7 +194,7 @@
 		DA926A9DD81185C2BD496813 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				1048A30B34DC7A16EC811518 /* sdk */,
+				E6C8264D6C92607EEC833733 /* abundance-swift-sdk */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -176,6 +203,8 @@
 			isa = PBXGroup;
 			children = (
 				E5E33D450E601B36051650D3 /* DeviceDetailsView.swift */,
+				513B01530C8468C2344049A6 /* FirmwareUpdateState.swift */,
+				BADBAC5827E57D4FDABB5E8E /* FirmwareUpdateView.swift */,
 				CB5ECC9848A91F652A4C083B /* SettingsView.swift */,
 			);
 			path = Settings;
@@ -202,6 +231,24 @@
 			productName = AbundanceSample;
 			productReference = D872481A13B4E3C31058F205 /* AbundanceSample.app */;
 			productType = "com.apple.product-type.application";
+		};
+		390A3999CB3F8A7C60EFAEE6 /* AbundanceSampleTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6E411F9B6B95C088834EC43E /* Build configuration list for PBXNativeTarget "AbundanceSampleTests" */;
+			buildPhases = (
+				3E4DF0F1B70A1642698AB07A /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BC394E4EAAD5B9AA717636A6 /* PBXTargetDependency */,
+			);
+			name = AbundanceSampleTests;
+			packageProductDependencies = (
+			);
+			productName = AbundanceSampleTests;
+			productReference = 80AD7F28C3D65C9CA6645FDE /* AbundanceSampleTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -230,11 +277,20 @@
 			projectRoot = "";
 			targets = (
 				092D8294899EE6B81AFD1569 /* AbundanceSample */,
+				390A3999CB3F8A7C60EFAEE6 /* AbundanceSampleTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3E4DF0F1B70A1642698AB07A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D3E08A4DCA2CB6954D60CEEB /* FirmwareUpdateStateTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5F1F87F3CF0953EA281F9452 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -249,6 +305,8 @@
 				8672E4A48CD7C09E0E3BCD78 /* Color+Hex.swift in Sources */,
 				A60E5BE6FBFEB53514A6D3D4 /* DeviceDetailsView.swift in Sources */,
 				108DE35DD80C9B95B1CB264B /* DeviceStore.swift in Sources */,
+				DB0DAEA7459036B1CB20E8E0 /* FirmwareUpdateState.swift in Sources */,
+				2F158922FC24EE83A32A4D52 /* FirmwareUpdateView.swift in Sources */,
 				BDA4C08A1EBB57452AEE11CF /* LivePreviewView.swift in Sources */,
 				2243852E4A3DC29F8E1EFAED /* LocalLibraryStore.swift in Sources */,
 				FA3B8736AE7CFD256379512B /* LocalMediaServer.swift in Sources */,
@@ -268,6 +326,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		BC394E4EAAD5B9AA717636A6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 092D8294899EE6B81AFD1569 /* AbundanceSample */;
+			targetProxy = 417C62875E11143B414CE7E2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		293760457FE4383059F7C0D7 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -286,6 +352,23 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.abundance.sample;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		2A299BDDD795069BAB4D0FB3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.abundance.AbundanceSampleTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AbundanceSample.app/AbundanceSample";
 			};
 			name = Debug;
 		};
@@ -351,6 +434,23 @@
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
+		};
+		D8B33B1A8461BE57D2EDD75B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.abundance.AbundanceSampleTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AbundanceSample.app/AbundanceSample";
+			};
+			name = Release;
 		};
 		E6CF5A9CF872FB9B9F395881 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -436,6 +536,15 @@
 			buildConfigurations = (
 				293760457FE4383059F7C0D7 /* Debug */,
 				E6CF5A9CF872FB9B9F395881 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6E411F9B6B95C088834EC43E /* Build configuration list for PBXNativeTarget "AbundanceSampleTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2A299BDDD795069BAB4D0FB3 /* Debug */,
+				D8B33B1A8461BE57D2EDD75B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

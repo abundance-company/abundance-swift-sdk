@@ -25,3 +25,14 @@ targets:
         INFOPLIST_FILE: App/Info.plist
     dependencies:
       - package: AbundanceDeviceKit
+
+  AbundanceSampleTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: AbundanceSample

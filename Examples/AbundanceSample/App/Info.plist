@@ -31,6 +31,8 @@
 	</dict>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>The app connects directly to your Abundance device over the local network to pair, stream, and offload recordings.</string>
+	<key>FirmwareReleaseFeedURL</key>
+	<string>https://releases.abundance.company/latest.json</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -115,9 +115,10 @@ final class DeviceStore {
             return false
         }
         do {
-            let device = try await AbundanceDevice.connect(credentials: saved)
-            persist(try await device.refreshTokenIfNeeded())
-            adopt(device)
+            let refreshed = try await AbundanceDevice.connect(credentials: saved)
+            persist(try await refreshed.refreshTokenIfNeeded())
+            close()
+            adopt(refreshed)
             return true
         } catch let error as AbundanceError {
             // Only an authoritative rejection burns the stored token; a
@@ -337,6 +338,8 @@ final class DeviceStore {
             return "The camera sent a response this app doesn't understand."
         case .hashMismatch(let artifact, _, _):
             return "\(artifact) failed hash verification — try the download again."
+        case .incompatibleFirmwareRelease:
+            return "This release does not support this camera model."
         case .previewProtocolViolation:
             return "Preview protocol error — update the app or the device."
         case .clockSync:

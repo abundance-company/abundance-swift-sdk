@@ -43,6 +43,18 @@ struct SettingsView: View {
                 }
                 .font(AbundanceFont.caption)
                 .foregroundStyle(theme.textTertiary)
+                NavigationLink {
+                    FirmwareUpdateView()
+                } label: {
+                    HStack(spacing: AbundanceSpacing.xxs) {
+                        Text("Firmware update")
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 10, weight: .semibold))
+                    }
+                }
+                .font(AbundanceFont.label)
+                .foregroundStyle(theme.textAccentOcean)
+                .padding(.top, AbundanceSpacing.xxs)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
