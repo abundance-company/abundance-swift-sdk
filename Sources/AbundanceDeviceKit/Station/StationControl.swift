@@ -16,14 +16,17 @@ public struct StationControl: Sendable {
 
     /// Scans from the device's radio (`GET /v1/wifi/scan`). The single radio
     /// hops channels while scanning, so expect a brief SoftAP stall — not a
-    /// disconnect. Refused with `.device(.recordingActive)` during capture.
+    /// disconnect. Refused with `.device(.recordingActive)` while a capture
+    /// or preview runs.
     public func scanNetworks() async throws -> WifiScan {
         try await connection.get("/v1/wifi/scan")
     }
 
-    /// Saves a network and joins it (`POST /v1/wifi`). The profile persists —
-    /// the device rejoins on every boot — but a failed join saves nothing, so
-    /// a typo never leaves the device retrying a bad credential.
+    /// Saves a network and joins it (`POST /v1/wifi`), blocking for up to 30
+    /// seconds. The profile persists — the device rejoins on every boot — but
+    /// a failed join saves nothing, so a typo never leaves the device retrying
+    /// a bad credential. The SoftAP follows the uplink channel, so joining a
+    /// network on another channel can briefly blip your connection.
     ///
     /// Wrong password or out of range throws `.device(.joinFailed)`.
     public func join(ssid: String, passphrase: String) async throws -> StationStatus {
@@ -40,7 +43,7 @@ public struct StationControl: Sendable {
     /// Saved networks, current uplink, and the SoftAP (`GET /v1/wifi`). The
     /// same information rides in the snapshot's `network` group, so a client
     /// already reading snapshots does not need this call.
-    public func configuration() async throws -> WifiConfiguration {
+    public func savedNetworksAndUplink() async throws -> WifiStatus {
         try await connection.get("/v1/wifi")
     }
 
@@ -64,7 +67,7 @@ public struct StationControl: Sendable {
     /// URL and one bearer token — the device holds nothing else. Send
     /// `enabled: false` to pause without forgetting the destination.
     @discardableResult
-    public func configureUpload(_ target: UploadTarget) async throws -> UploadTargetStatus {
+    public func setUploadTarget(_ target: UploadTarget) async throws -> UploadTargetStatus {
         try await connection.send("PUT", "/v1/upload", body: target)
     }
 }
@@ -87,16 +90,17 @@ public struct WifiNetwork: Decodable, Sendable, Equatable {
     public let saved: Bool
 }
 
-/// The device's uplink, as reported after a join or in configuration.
+/// The device's uplink, as reported after a join or in `WifiStatus`.
 public struct StationStatus: Decodable, Sendable, Equatable {
     public let ssid: String
+    /// Closed enum: "disconnected" | "connecting" | "connected"
     public let state: String
     public let rssiDbm: Int?
     public let channel: Int?
     public let hasInternet: Bool?
 }
 
-public struct WifiConfiguration: Decodable, Sendable, Equatable {
+public struct WifiStatus: Decodable, Sendable, Equatable {
     public let saved: [String]
     public let station: StationStatus?
     public let ap: AccessPoint?
@@ -153,6 +157,8 @@ public struct UploadStatus: Decodable, Sendable, Equatable {
 
     public let enabled: Bool
     public let baseURL: URL?
+    /// Closed enum: "disabled" | "idle" | "waiting_network" | "paused" |
+    /// "uploading" | "error"
     public let state: String?
     public let pendingSessions: Int?
     public let pendingBytes: Int64?

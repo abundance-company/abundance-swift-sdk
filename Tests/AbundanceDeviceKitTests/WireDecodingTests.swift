@@ -106,9 +106,11 @@ final class WireDecodingTests: XCTestCase {
     func testUnknownErrorCodeIsPreserved() {
         XCTAssertEqual(ErrorCode("flux_capacitor"), .unknown("flux_capacitor"))
         XCTAssertEqual(ErrorCode("join_failed"), .joinFailed)
+        XCTAssertEqual(ErrorCode("station_enabled"), .stationEnabled)
         XCTAssertEqual(ErrorCode("internal"), .internalError)
         XCTAssertEqual(ErrorCode("update_already_attempted"), .updateAlreadyAttempted)
         XCTAssertEqual(ErrorCode.updateAlreadyAttempted.rawValue, "update_already_attempted")
+        XCTAssertEqual(ErrorCode.stationEnabled.rawValue, "station_enabled")
         XCTAssertEqual(ErrorCode.internalError.rawValue, "internal")
     }
 
@@ -236,6 +238,17 @@ final class WireDecodingTests: XCTestCase {
         let decoded = try JSONDecoder.abundance.decode(WifiScan.self, from: Data(scan.utf8))
         XCTAssertEqual(decoded.networks.first?.rssiDbm, -47)
         XCTAssertEqual(decoded.networks.first?.saved, true)
+        let wifi = """
+        { "saved": ["HomeNet"],
+          "station": { "ssid": "HomeNet", "state": "connected", "rssi_dbm": -47,
+                       "channel": 36, "has_internet": true },
+          "ap": { "ssid": "A4-Abundance-1234", "channel": 36, "width_mhz": 20 } }
+        """
+        let wifiStatus = try JSONDecoder.abundance.decode(WifiStatus.self, from: Data(wifi.utf8))
+        XCTAssertEqual(wifiStatus.saved, ["HomeNet"])
+        XCTAssertEqual(wifiStatus.station?.state, "connected")
+        XCTAssertEqual(wifiStatus.ap?.channel, 36)
+
 
         let status = """
         { "enabled": true, "base_url": "https://ingest.example.com/abundance", "state": "uploading",

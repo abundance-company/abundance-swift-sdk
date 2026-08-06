@@ -10,8 +10,9 @@ import Foundation
 ///    completion URL). Destinations are opaque to the device — presigned S3,
 ///    your own endpoints, anything. Omit an artifact and the device treats it
 ///    as already held (how a retry skips what landed).
-/// 2. **Upload** — one `PUT` per artifact, serial, largest last, each with
-///    `X-Abundance-SHA256`. Your 2xx means you verified the bytes.
+/// 2. **Upload** — one `PUT` per artifact, serial, in manifest order (segment
+///    0's triple first), each with `X-Abundance-SHA256`. Your 2xx means you
+///    verified the bytes.
 /// 3. **Complete** — `POST {complete_url}` with a `CompletionReport`. Your
 ///    200 permits deletion; reply 409 with the missing names for a partial
 ///    re-upload.

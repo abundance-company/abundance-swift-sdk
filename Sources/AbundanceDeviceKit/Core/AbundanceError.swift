@@ -62,6 +62,7 @@ public enum ErrorCode: Sendable, Hashable {
     case lengthRequired
     case insufficientSpace
     case joinFailed
+    case stationEnabled
     case shaMismatch
     case csvShaMismatch
     case framesShaMismatch
@@ -89,6 +90,7 @@ public enum ErrorCode: Sendable, Hashable {
         case "length_required": self = .lengthRequired
         case "insufficient_space": self = .insufficientSpace
         case "join_failed": self = .joinFailed
+        case "station_enabled": self = .stationEnabled
         case "sha_mismatch": self = .shaMismatch
         case "csv_sha_mismatch": self = .csvShaMismatch
         case "frames_sha_mismatch": self = .framesShaMismatch
@@ -118,6 +120,7 @@ public enum ErrorCode: Sendable, Hashable {
         case .lengthRequired: "length_required"
         case .insufficientSpace: "insufficient_space"
         case .joinFailed: "join_failed"
+        case .stationEnabled: "station_enabled"
         case .shaMismatch: "sha_mismatch"
         case .csvShaMismatch: "csv_sha_mismatch"
         case .framesShaMismatch: "frames_sha_mismatch"
