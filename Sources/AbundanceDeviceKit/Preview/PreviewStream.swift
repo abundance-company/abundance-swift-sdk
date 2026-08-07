@@ -16,9 +16,14 @@ public struct PreviewStream: Sendable {
 
     /// Raw NAL unit payloads, wire framing removed. One HTTP connection per
     /// call; the consumer owns reconnect. Finishes cleanly when the device
-    /// ends the stream; throws `AbundanceError` — `.previewProtocolViolation` is the
-    /// one not to retry.
-    public func nalUnits() -> AsyncThrowingStream<Data, Error> {
+    /// ends the stream; throws `AbundanceError` — `.previewProtocolViolation`
+    /// is the one not to retry.
+    ///
+    /// The first subscriber of a generation picks the quality; later joiners
+    /// get the pipeline already running.
+    public func nalUnits(
+        quality: PreviewQuality = .high
+    ) -> AsyncThrowingStream<Data, Error> {
         AsyncThrowingStream { continuation in
             let connection = connection
             let task = Task {
@@ -35,7 +40,9 @@ public struct PreviewStream: Sendable {
                     let session = URLSession(configuration: config)
                     defer { session.invalidateAndCancel() }
 
-                    var request = URLRequest(url: connection.url(for: "/v1/preview"))
+                    var request = URLRequest(
+                        url: connection.url(for: "/v1/preview?quality=\(quality.rawValue)")
+                    )
                     request.setValue(
                         "application/vnd.abundance.h264-preview.v1",
                         forHTTPHeaderField: "Accept"
@@ -85,4 +92,9 @@ public struct PreviewStream: Sendable {
             return .transport(error.localizedDescription)
         }
     }
+}
+
+public enum PreviewQuality: String, Sendable {
+    case high
+    case low
 }

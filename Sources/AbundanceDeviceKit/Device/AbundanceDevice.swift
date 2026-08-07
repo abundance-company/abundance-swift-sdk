@@ -13,6 +13,9 @@ public actor AbundanceDevice {
     public nonisolated let recording: RecordingControl
     /// Live viewfinder — requires `control`.
     public nonisolated let preview: PreviewStream
+    /// Device-wide capture settings — requires `metrics` to read and `config`
+    /// to change, firmware ≥ 1.1.0.
+    public nonisolated let settings: SettingsControl
     /// Session offload, logs, discard — requires `offload`.
     public nonisolated let recordings: SessionOffload
     /// Wi-Fi uplink + upload broker settings — requires `config`,
@@ -34,6 +37,7 @@ public actor AbundanceDevice {
         self.recording = RecordingControl(connection: connection, time: TimeSync(connection: connection))
         self.events = DeviceEvents(broadcaster: EventBroadcaster(connection: connection))
         self.preview = PreviewStream(connection: connection)
+        self.settings = SettingsControl(connection: connection)
         self.recordings = SessionOffload(connection: connection)
         self.station = StationControl(connection: connection)
         self.maintenance = Maintenance(connection: connection)

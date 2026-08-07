@@ -349,6 +349,55 @@ final class WireDecodingTests: XCTestCase {
         XCTAssertEqual(decoded, credentials)
         XCTAssertEqual(decoded.baseURL.absoluteString, "http://192.168.42.1:8443")
     }
+
+    // MARK: - Capture settings
+
+    func testDeviceSettingsDecode() throws {
+        let json = """
+        {
+          "anti_flicker_hz": 50,
+          "video_bitrate_mbps": 16,
+          "accepted": {
+            "anti_flicker_hz": [50, 60],
+            "video_bitrate_mbps": { "min": 4, "max": 20 }
+          }
+        }
+        """
+        let settings = try JSONDecoder.abundance.decode(
+            DeviceSettings.self,
+            from: Data(json.utf8)
+        )
+        XCTAssertEqual(settings.antiFlickerHz, .hz50)
+        XCTAssertEqual(settings.videoBitrateMbps, 16)
+    }
+
+    func testDeviceSettingsRoundtrip() throws {
+        let json = """
+        {
+          "anti_flicker_hz": 60,
+          "video_bitrate_mbps": 8,
+          "accepted": {
+            "anti_flicker_hz": [50, 60],
+            "video_bitrate_mbps": { "min": 4, "max": 20 }
+          }
+        }
+        """
+        let settings = try JSONDecoder.abundance.decode(
+            DeviceSettings.self,
+            from: Data(json.utf8)
+        )
+        XCTAssertEqual(settings.antiFlickerHz, .hz60)
+        XCTAssertEqual(settings.videoBitrateMbps, 8)
+
+        let encoded = try JSONEncoder.abundance.encode(settings)
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+        XCTAssertEqual(object["anti_flicker_hz"] as? Int, 60)
+        XCTAssertEqual(object["video_bitrate_mbps"] as? Int, 8)
+        XCTAssertEqual(
+            try JSONDecoder.abundance.decode(DeviceSettings.self, from: encoded),
+            settings
+        )
+    }
 }
 
 private final class StationURLProtocol: URLProtocol {

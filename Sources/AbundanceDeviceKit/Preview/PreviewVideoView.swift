@@ -95,25 +95,32 @@ public final class SampleBufferVideoView: UIView {
 public struct PreviewVideoView: View {
     private let preview: PreviewStream
     private let cropsToLeftEye: Bool
+    private let quality: PreviewQuality
 
-    public init(preview: PreviewStream, cropsToLeftEye: Bool = true) {
+    public init(
+        preview: PreviewStream,
+        cropsToLeftEye: Bool = true,
+        quality: PreviewQuality = .high
+    ) {
         self.preview = preview
         self.cropsToLeftEye = cropsToLeftEye
+        self.quality = quality
     }
 
     public var body: some View {
-        PreviewMount(preview: preview, cropsToLeftEye: cropsToLeftEye)
+        PreviewMount(preview: preview, cropsToLeftEye: cropsToLeftEye, quality: quality)
     }
 }
 
 private struct PreviewMount: UIViewRepresentable {
     let preview: PreviewStream
     let cropsToLeftEye: Bool
+    let quality: PreviewQuality
 
     func makeUIView(context: Context) -> SampleBufferVideoView {
         let view = SampleBufferVideoView()
         view.cropsToLeftEye = cropsToLeftEye
-        context.coordinator.start(preview: preview, view: view)
+        context.coordinator.start(preview: preview, quality: quality, view: view)
         return view
     }
 
@@ -131,13 +138,17 @@ private struct PreviewMount: UIViewRepresentable {
     final class Coordinator {
         private var task: Task<Void, Never>?
 
-        func start(preview: PreviewStream, view: SampleBufferVideoView) {
+        func start(
+            preview: PreviewStream,
+            quality: PreviewQuality,
+            view: SampleBufferVideoView
+        ) {
             guard task == nil else { return }
             task = Task { [weak view] in
                 let assembler = H264SampleBufferAssembler()
                 while !Task.isCancelled {
                     do {
-                        for try await nal in preview.nalUnits() {
+                        for try await nal in preview.nalUnits(quality: quality) {
                             guard let view else { return }
                             let frame: H264SampleBufferAssembler.Frame?
                             do {
