@@ -198,6 +198,6 @@ public struct StorageBreakdown: Decodable, Sendable, Equatable {
     /// open after deletion.
     public let unaccountedBytes: Int64
     public let entries: [Entry]
-    public let scanSeconds: Double?
-    public let cachedAgeS: Double?
+    public let scanSeconds: Double
+    public let cachedAgeS: Double
 }

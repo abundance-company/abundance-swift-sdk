@@ -33,6 +33,11 @@ public struct RecordingManifest: Decodable, Sendable, Equatable {
     /// The exact correction applied. Invertible: the raw FPGA column is
     /// untouched, so subtracting this returns the uncorrected value.
     public let imuTimeOffsetNanoseconds: Int64
+    public let deviceId: String
+    public let factoryUuid: String
+    public let cameraFirmwareVersion: String
+    public let nanopiFirmwareVersion: String
+    public let videoBitrateMbps: Int
     public let segments: [SegmentInfo]
 
     private enum CodingKeys: String, CodingKey {
@@ -46,6 +51,11 @@ public struct RecordingManifest: Decodable, Sendable, Equatable {
         case utcAccuracyNs
         case absoluteUvcLatencyCalibrated
         case imuTimeOffsetNs
+        case deviceId
+        case factoryUuid
+        case cameraFirmwareVersion
+        case nanopiFirmwareVersion
+        case videoBitrateMbps
         case segments
     }
 
@@ -59,6 +69,11 @@ public struct RecordingManifest: Decodable, Sendable, Equatable {
         utcAccuracyNanoseconds = try container.decode(Int64.self, forKey: .utcAccuracyNs)
         absoluteUVCLatencyCalibrated = try container.decode(Bool.self, forKey: .absoluteUvcLatencyCalibrated)
         imuTimeOffsetNanoseconds = try container.decode(Int64.self, forKey: .imuTimeOffsetNs)
+        deviceId = try container.decode(String.self, forKey: .deviceId)
+        factoryUuid = try container.decode(String.self, forKey: .factoryUuid)
+        cameraFirmwareVersion = try container.decode(String.self, forKey: .cameraFirmwareVersion)
+        nanopiFirmwareVersion = try container.decode(String.self, forKey: .nanopiFirmwareVersion)
+        videoBitrateMbps = try container.decode(Int.self, forKey: .videoBitrateMbps)
         segments = try container.decode([SegmentInfo].self, forKey: .segments)
     }
 }

@@ -124,10 +124,15 @@ final class WireDecodingTests: XCTestCase {
         let json = """
         {
           "version": 1, "state": "published", "session_id": "s000042_k3x9qz",
+          "device_id": "7f3c1e2a-9b4d-4c6e-8a15-2d9f0b7c4e21",
+          "factory_uuid": "2f2a8be7-2e39-41ce-b5d7-d771b9f1be91",
+          "camera_firmware_version": "NORI-CAM-0001",
+          "nanopi_firmware_version": "1.0.15",
           "recovered": false, "dropped_segment_indices": [],
           "utc_accuracy_ns": 2213000,
           "absolute_uvc_latency_calibrated": true,
           "imu_time_offset_ns": -5400000,
+          "video_bitrate_mbps": 16,
           "segments": [
             { "index": 0,
               "video":  { "name": "s000042_k3x9qz_00000.ts", "size_bytes": 241594368, "sha256": "3b7f" },
@@ -142,6 +147,11 @@ final class WireDecodingTests: XCTestCase {
         XCTAssertEqual(manifest.utcAccuracyNanoseconds, 2_213_000)
         XCTAssertTrue(manifest.absoluteUVCLatencyCalibrated)
         XCTAssertEqual(manifest.imuTimeOffsetNanoseconds, -5_400_000)
+        XCTAssertEqual(manifest.deviceId, "7f3c1e2a-9b4d-4c6e-8a15-2d9f0b7c4e21")
+        XCTAssertEqual(manifest.factoryUuid, "2f2a8be7-2e39-41ce-b5d7-d771b9f1be91")
+        XCTAssertEqual(manifest.cameraFirmwareVersion, "NORI-CAM-0001")
+        XCTAssertEqual(manifest.nanopiFirmwareVersion, "1.0.15")
+        XCTAssertEqual(manifest.videoBitrateMbps, 16)
         XCTAssertEqual(manifest.segments.count, 1)
         XCTAssertEqual(manifest.segments[0].video.sizeBytes, 241_594_368)
         XCTAssertEqual(manifest.segments[0].frames.sha256, "5e2d")
@@ -230,6 +240,8 @@ final class WireDecodingTests: XCTestCase {
         XCTAssertEqual(breakdown.entries.count, 2)
         XCTAssertFalse(breakdown.entries[1].known)
         XCTAssertEqual(breakdown.unaccountedBytes, 184_549_376)
+        XCTAssertEqual(breakdown.scanSeconds, 0.08)
+        XCTAssertEqual(breakdown.cachedAgeS, 0)
     }
 
     // MARK: - Station models
