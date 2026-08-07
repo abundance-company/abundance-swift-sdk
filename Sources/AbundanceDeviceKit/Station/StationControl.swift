@@ -9,6 +9,10 @@ import Foundation
 /// `device.firmwareVersion`.
 public struct StationControl: Sendable {
     private let connection: DeviceConnection
+    /// Slashes are legal in SSIDs but must not escape their URL path segment.
+    private static let ssidPathSegmentAllowed = CharacterSet.urlPathAllowed.subtracting(
+        CharacterSet(charactersIn: "/")
+    )
 
     init(connection: DeviceConnection) {
         self.connection = connection
@@ -52,7 +56,7 @@ public struct StationControl: Sendable {
     /// connection — is unaffected.
     public func forget(ssid: String) async throws {
         struct Response: Decodable { let forgotten: Bool }
-        let escaped = ssid.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? ssid
+        let escaped = ssid.addingPercentEncoding(withAllowedCharacters: Self.ssidPathSegmentAllowed) ?? ssid
         let _: Response = try await connection.delete("/v1/wifi/\(escaped)")
     }
 
@@ -70,13 +74,23 @@ public struct StationControl: Sendable {
     public func setUploadTarget(_ target: UploadTarget) async throws -> UploadTargetStatus {
         try await connection.send("PUT", "/v1/upload", body: target)
     }
+
+    /// Pauses or resumes Station upload without forgetting the destination —
+    /// `PUT /v1/upload` with only `enabled`. The stored base URL and token
+    /// are untouched, so this is safe for clients that never see the token.
+    /// While paused, deletion authority returns to offload acks.
+    @discardableResult
+    public func setUploadEnabled(_ enabled: Bool) async throws -> UploadTargetStatus {
+        struct Body: Encodable { let enabled: Bool }
+        return try await connection.send("PUT", "/v1/upload", body: Body(enabled: enabled))
+    }
 }
 
 // MARK: - Models
 
 public struct WifiScan: Decodable, Sendable, Equatable {
     public let networks: [WifiNetwork]
-    public let scannedUptimeS: Double?
+    public let scannedUptimeS: Double
 }
 
 public struct WifiNetwork: Decodable, Sendable, Equatable {
@@ -92,7 +106,8 @@ public struct WifiNetwork: Decodable, Sendable, Equatable {
 
 /// The device's uplink, as reported after a join or in `WifiStatus`.
 public struct StationStatus: Decodable, Sendable, Equatable {
-    public let ssid: String
+    /// Present while connecting or connected; absent when disconnected.
+    public let ssid: String?
     /// Closed enum: "disconnected" | "connecting" | "connected"
     public let state: String
     public let rssiDbm: Int?
@@ -103,14 +118,15 @@ public struct StationStatus: Decodable, Sendable, Equatable {
 public struct WifiStatus: Decodable, Sendable, Equatable {
     public let saved: [String]
     public let station: StationStatus?
-    public let ap: AccessPoint?
+    public let ap: AccessPoint
 }
 
-/// The device's own SoftAP.
+/// The device's own SoftAP. All keys are present; values may be empty or zero
+/// while the SoftAP is idle.
 public struct AccessPoint: Decodable, Sendable, Equatable {
-    public let ssid: String?
-    public let channel: Int?
-    public let widthMhz: Int?
+    public let ssid: String
+    public let channel: Int
+    public let widthMhz: Int
 }
 
 /// What you configure: broker base URL + bearer token.
@@ -159,9 +175,9 @@ public struct UploadStatus: Decodable, Sendable, Equatable {
     public let baseURL: URL?
     /// Closed enum: "disabled" | "idle" | "waiting_network" | "paused" |
     /// "uploading" | "error"
-    public let state: String?
-    public let pendingSessions: Int?
-    public let pendingBytes: Int64?
+    public let state: String
+    public let pendingSessions: Int
+    public let pendingBytes: Int64
     public let current: CurrentUpload?
     public let lastSuccessUptimeS: Double?
     public let lastError: String?

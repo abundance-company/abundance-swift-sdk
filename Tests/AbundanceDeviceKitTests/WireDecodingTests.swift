@@ -4,6 +4,10 @@ import XCTest
 /// Wire fixtures lifted verbatim from the device API reference — if these
 /// decode, the SDK matches the published contract.
 final class WireDecodingTests: XCTestCase {
+    override func tearDown() {
+        StationURLProtocol.handler = nil
+        super.tearDown()
+    }
 
     // MARK: - DeviceSnapshot
 
@@ -238,6 +242,7 @@ final class WireDecodingTests: XCTestCase {
         let decoded = try JSONDecoder.abundance.decode(WifiScan.self, from: Data(scan.utf8))
         XCTAssertEqual(decoded.networks.first?.rssiDbm, -47)
         XCTAssertEqual(decoded.networks.first?.saved, true)
+        XCTAssertEqual(decoded.scannedUptimeS, 8_123.4)
         let wifi = """
         { "saved": ["HomeNet"],
           "station": { "ssid": "HomeNet", "state": "connected", "rssi_dbm": -47,
@@ -247,7 +252,20 @@ final class WireDecodingTests: XCTestCase {
         let wifiStatus = try JSONDecoder.abundance.decode(WifiStatus.self, from: Data(wifi.utf8))
         XCTAssertEqual(wifiStatus.saved, ["HomeNet"])
         XCTAssertEqual(wifiStatus.station?.state, "connected")
-        XCTAssertEqual(wifiStatus.ap?.channel, 36)
+        XCTAssertEqual(wifiStatus.ap.channel, 36)
+        XCTAssertEqual(wifiStatus.ap.ssid, "A4-Abundance-1234")
+        XCTAssertEqual(wifiStatus.ap.widthMhz, 20)
+
+        // No uplink: the firmware omits ssid/rssi/channel entirely
+        // (api.html StationState: those keys are present when connected).
+        let disconnected = """
+        { "saved": [],
+          "station": { "state": "disconnected" },
+          "ap": { "ssid": "A4-Abundance-1234", "channel": 6, "width_mhz": 20 } }
+        """
+        let idle = try JSONDecoder.abundance.decode(WifiStatus.self, from: Data(disconnected.utf8))
+        XCTAssertEqual(idle.station?.state, "disconnected")
+        XCTAssertNil(idle.station?.ssid)
 
 
         let status = """
@@ -260,6 +278,23 @@ final class WireDecodingTests: XCTestCase {
         XCTAssertEqual(upload.baseURL?.absoluteString, "https://ingest.example.com/abundance")
         XCTAssertEqual(upload.current?.percent, 42.5)
         XCTAssertNil(upload.lastError)
+    }
+
+    func testForgetPercentEncodesSlashInSSID() async throws {
+        StationURLProtocol.handler = { request in
+            XCTAssertEqual(request.httpMethod, "DELETE")
+            XCTAssertEqual(request.url?.absoluteString, "http://device.test/v1/wifi/Floor%2FLab")
+            return (200, Data(#"{"forgotten":true}"#.utf8))
+        }
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [StationURLProtocol.self]
+        let connection = DeviceConnection(
+            baseURL: URL(string: "http://device.test")!,
+            token: "token",
+            session: URLSession(configuration: configuration)
+        )
+
+        try await StationControl(connection: connection).forget(ssid: "Floor/Lab")
     }
 
     func testUploadTargetEncodesSnakeCase() throws {
@@ -302,4 +337,30 @@ final class WireDecodingTests: XCTestCase {
         XCTAssertEqual(decoded, credentials)
         XCTAssertEqual(decoded.baseURL.absoluteString, "http://192.168.42.1:8443")
     }
+}
+
+private final class StationURLProtocol: URLProtocol {
+    nonisolated(unsafe) static var handler: ((URLRequest) -> (Int, Data))?
+
+    override class func canInit(with request: URLRequest) -> Bool { true }
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+
+    override func startLoading() {
+        guard let handler = Self.handler else {
+            XCTFail("missing HTTP handler")
+            return
+        }
+        let (status, data) = handler(request)
+        let response = HTTPURLResponse(
+            url: request.url!,
+            statusCode: status,
+            httpVersion: nil,
+            headerFields: ["Content-Type": "application/json"]
+        )!
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: data)
+        client?.urlProtocolDidFinishLoading(self)
+    }
+
+    override func stopLoading() {}
 }

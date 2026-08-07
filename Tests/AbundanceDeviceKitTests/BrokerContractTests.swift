@@ -14,6 +14,7 @@ final class BrokerContractTests: XCTestCase {
           "utc_accuracy_ns": 2213000,
           "absolute_uvc_latency_calibrated": true,
           "imu_time_offset_ns": -5400000,
+          "video_bitrate_mbps": 16,
           "recovered": false,
           "dropped_segment_indices": [],
           "segments": [
@@ -31,6 +32,7 @@ final class BrokerContractTests: XCTestCase {
         )
         XCTAssertEqual(announce.sessionID, "s000042_k3x9qz")
         XCTAssertEqual(announce.firmwareVersion, "1.1.0")
+        XCTAssertEqual(announce.videoBitrateMbps, 16)
         XCTAssertEqual(announce.utcAccuracyNanoseconds, 2_213_000)
         // Announce artifacts use `bytes`, not the manifest's `size_bytes`.
         XCTAssertEqual(announce.segments[0].video.bytes, 241_594_368)

@@ -17,9 +17,12 @@ import Foundation
 ///    200 permits deletion; reply 409 with the missing names for a partial
 ///    re-upload.
 ///
-/// Every device request carries `Authorization: Bearer <your token>` and
-/// `X-Abundance-Device-Id`. A device that crashes mid-upload re-announces the
-/// same session — treat a repeat as a request for fresh destinations.
+/// Announce and complete carry `Authorization: Bearer <your token>` and
+/// `X-Abundance-Device-Id`. Artifact PUTs carry only the plan's `headers`
+/// plus `X-Abundance-SHA256` — a destination that needs auth names it in the
+/// plan, the way a presigned S3 URL embeds its signature. A device that
+/// crashes mid-upload re-announces the same session — treat a repeat as a
+/// request for fresh destinations.
 public enum AbundanceBroker {
     // MARK: - Step 1 · announce
 
@@ -32,6 +35,7 @@ public enum AbundanceBroker {
         public let utcAccuracyNanoseconds: Int64
         public let absoluteUVCLatencyCalibrated: Bool
         public let imuTimeOffsetNanoseconds: Int64
+        public let videoBitrateMbps: Int
         public let recovered: Bool
         public let droppedSegmentIndices: [Int]
         public let segments: [AnnouncedSegment]
@@ -44,6 +48,7 @@ public enum AbundanceBroker {
             utcAccuracyNanoseconds: Int64,
             absoluteUVCLatencyCalibrated: Bool,
             imuTimeOffsetNanoseconds: Int64,
+            videoBitrateMbps: Int,
             recovered: Bool,
             droppedSegmentIndices: [Int],
             segments: [AnnouncedSegment],
@@ -55,6 +60,7 @@ public enum AbundanceBroker {
             self.utcAccuracyNanoseconds = utcAccuracyNanoseconds
             self.absoluteUVCLatencyCalibrated = absoluteUVCLatencyCalibrated
             self.imuTimeOffsetNanoseconds = imuTimeOffsetNanoseconds
+            self.videoBitrateMbps = videoBitrateMbps
             self.recovered = recovered
             self.droppedSegmentIndices = droppedSegmentIndices
             self.segments = segments
@@ -68,6 +74,7 @@ public enum AbundanceBroker {
             case utcAccuracyNanoseconds = "utc_accuracy_ns"
             case absoluteUVCLatencyCalibrated = "absolute_uvc_latency_calibrated"
             case imuTimeOffsetNanoseconds = "imu_time_offset_ns"
+            case videoBitrateMbps = "video_bitrate_mbps"
             case recovered
             case droppedSegmentIndices = "dropped_segment_indices"
             case segments
