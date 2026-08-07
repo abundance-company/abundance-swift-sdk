@@ -1,0 +1,27 @@
+app = "abundance-broker-ref"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  ABUNDANCE_BROKER_LISTEN = ":8080"
+  ABUNDANCE_BROKER_STORAGE_DIR = "/data"
+  ABUNDANCE_S3_PREFIX = "station"
+
+[[mounts]]
+  source = "broker_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_start_machines = true
+  auto_stop_machines = "stop"
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory = "256mb"

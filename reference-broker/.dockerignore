@@ -1,0 +1,3 @@
+# Build context is the reference-broker module; keep secrets and run state out.
+deploy/broker.env
+broker-data/

@@ -60,3 +60,7 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+
+# Reference broker live config (secrets); broker.env.example is the tracked shape.
+reference-broker/deploy/broker.env
+reference-broker/broker-data/
