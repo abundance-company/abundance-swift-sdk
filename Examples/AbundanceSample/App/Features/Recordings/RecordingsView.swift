@@ -11,6 +11,9 @@ struct RecordingsView: View {
 
     @State private var deviceSessions: [RecordingSession] = []
     @State private var playing: LocalRecording?
+    /// Live Station-upload progress, polled only while Station mode has
+    /// sessions in flight; `current` names the session and percent on the wire.
+    @State private var uploadStatus: UploadStatus?
 
     var body: some View {
         AbundanceBackground {
@@ -28,6 +31,7 @@ struct RecordingsView: View {
         .task {
             library.refresh()
             await refreshDeviceList()
+            await store.refreshStationUpload()
         }
         .refreshable {
             library.refresh()
@@ -42,6 +46,20 @@ struct RecordingsView: View {
         .onChange(of: store.snapshot?.publishing?.sessionId) {
             Task { await refreshDeviceList() }
         }
+        .onChange(of: store.publishedCount) {
+            Task { await refreshDeviceList() }
+        }
+        // Station mode with sessions on the card: poll the uploader so rows
+        // show live percent and vanish when the camera finishes.
+        .task(id: stationPollActive) {
+            guard stationPollActive, let device = store.device else { return }
+            while !Task.isCancelled, store.stationUploadEnabled, showsCameraSection {
+                uploadStatus = try? await device.station.uploadStatus()
+                await refreshDeviceList()
+                try? await Task.sleep(for: .seconds(2))
+            }
+            uploadStatus = nil
+        }
         .fullScreenCover(item: $playing) { recording in
             RecordingPlayerView(recording: recording)
         }
@@ -54,6 +72,12 @@ struct RecordingsView: View {
     /// publishing finishes, but the operator should see it exists.
     private var showsCameraSection: Bool {
         store.isPaired && (!deviceSessions.isEmpty || store.snapshot?.publishing?.sessionId != nil)
+    }
+
+    // MARK: - offload destination
+
+    private var stationPollActive: Bool {
+        store.stationUploadEnabled && showsCameraSection
     }
 
     private var cameraSection: some View {
@@ -136,7 +160,27 @@ struct RecordingsView: View {
     }
 
     @ViewBuilder private func deviceRowControl(_ session: RecordingSession) -> some View {
-        if session.state == .incomplete {
+        if store.stationUploadEnabled {
+            // Station mode: the camera uploads and deletes these itself. No
+            // Save (a local copy contradicts the chosen destination) and no
+            // Discard (the device refuses deletion-bearing calls anyway).
+            if let current = uploadStatus?.current, current.sessionId == session.id {
+                HStack(spacing: AbundanceSpacing.xs) {
+                    Text("\(Int(current.percent))%")
+                        .font(AbundanceFont.caption)
+                        .foregroundStyle(theme.textAccentOcean)
+                        .monospacedDigit()
+                    ProgressView(value: min(current.percent, 100), total: 100)
+                        .progressViewStyle(.circular)
+                        .controlSize(.small)
+                        .tint(theme.textAccentOcean)
+                }
+            } else {
+                Text("→ Station")
+                    .font(AbundanceFont.caption)
+                    .foregroundStyle(theme.textAccentOcean)
+            }
+        } else if session.state == .incomplete {
             Button("Discard") {
                 Task {
                     _ = await store.downloads.discard(session.id)

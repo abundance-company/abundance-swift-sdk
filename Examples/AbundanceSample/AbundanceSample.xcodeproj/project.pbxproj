@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		108DE35DD80C9B95B1CB264B /* DeviceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B5EF136A9BDE7236A4E216D /* DeviceStore.swift */; };
 		1D14435C0AA346F8DDE4F774 /* AbundanceDeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 211EBA2D411DE02115281D86 /* AbundanceDeviceKit */; };
+		2022CE2A588A1E70B6A0D90B /* UplinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1BDF410D568760F4A562B43 /* UplinkView.swift */; };
 		2243852E4A3DC29F8E1EFAED /* LocalLibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 329021F5AD06EB41880188F5 /* LocalLibraryStore.swift */; };
 		2CE7F2F34FC7D8981D5B9FA8 /* TSDuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = C81D79DE56B873ED8BD8C155 /* TSDuration.swift */; };
 		2F158922FC24EE83A32A4D52 /* FirmwareUpdateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BADBAC5827E57D4FDABB5E8E /* FirmwareUpdateView.swift */; };
@@ -72,7 +73,8 @@
 		BADBAC5827E57D4FDABB5E8E /* FirmwareUpdateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirmwareUpdateView.swift; sourceTree = "<group>"; };
 		C81D79DE56B873ED8BD8C155 /* TSDuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSDuration.swift; sourceTree = "<group>"; };
 		CB5ECC9848A91F652A4C083B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		D872481A13B4E3C31058F205 /* AbundanceSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AbundanceSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D1BDF410D568760F4A562B43 /* UplinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UplinkView.swift; sourceTree = "<group>"; };
+		D872481A13B4E3C31058F205 /* AbundanceSample.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = AbundanceSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E17493B5B7E1FDDA5792B47D /* FirmwareUpdateStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirmwareUpdateStateTests.swift; sourceTree = "<group>"; };
 		E54E7318D6CDFD27BC3B3E38 /* OffloadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffloadStore.swift; sourceTree = "<group>"; };
 		E5E33D450E601B36051650D3 /* DeviceDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceDetailsView.swift; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 				513B01530C8468C2344049A6 /* FirmwareUpdateState.swift */,
 				BADBAC5827E57D4FDABB5E8E /* FirmwareUpdateView.swift */,
 				CB5ECC9848A91F652A4C083B /* SettingsView.swift */,
+				D1BDF410D568760F4A562B43 /* UplinkView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -258,6 +261,8 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = A9F79E76705870F97D236B6C /* Build configuration list for PBXProject "AbundanceSample" */;
 			developmentRegion = en;
@@ -321,6 +326,7 @@
 				8ED4E11AF45825BBD10C7048 /* SessionThumbnailer.swift in Sources */,
 				4E9E6837634FDECC8557A98A /* SettingsView.swift in Sources */,
 				2CE7F2F34FC7D8981D5B9FA8 /* TSDuration.swift in Sources */,
+				2022CE2A588A1E70B6A0D90B /* UplinkView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,7 +347,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = BU4NVKNK4C;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -458,7 +463,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = BU4NVKNK4C;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = App/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

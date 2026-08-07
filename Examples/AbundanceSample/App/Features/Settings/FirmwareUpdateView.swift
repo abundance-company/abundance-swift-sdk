@@ -25,22 +25,24 @@ struct FirmwareUpdateView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: AbundanceSpacing.md) {
                     AbundanceCard {
-                        VStack(alignment: .leading, spacing: AbundanceSpacing.sm) {
-                            SectionHeader("Firmware update")
-                            Text(headline)
-                                .font(AbundanceFont.titleSmall)
-                                .foregroundStyle(theme.textPrimary)
-                            versionChips
-                            releaseNotes
+                        VStack(alignment: .leading, spacing: AbundanceSpacing.xs) {
+                            HStack {
+                                SectionHeader("Firmware")
+                                Spacer()
+                                headerAction
+                            }
                             if let instructions {
                                 Text(instructions)
-                                    .font(AbundanceFont.bodyMedium)
+                                    .font(AbundanceFont.caption)
                                     .foregroundStyle(theme.textTertiary)
+                                    .padding(.bottom, AbundanceSpacing.sm)
                             }
-                            if isChecking || isVerifying {
-                                ProgressView()
-                                    .tint(theme.textAccentOcean)
-                            } else if let progress = downloadProgress ?? uploadProgress {
+                            row("Status", statusValue)
+                            row("Current", cameraVersion.map { "v\($0)" } ?? "—")
+                            row("Available", latestRelease.map { "v\($0.version)" } ?? "—",
+                                danger: latestRelease?.critical == true && cameraVersion != latestRelease?.version)
+                            row("Notes", latestRelease?.notes ?? "—")
+                            if let progress = downloadProgress ?? uploadProgress {
                                 ProgressView(value: progress)
                                     .tint(theme.textAccentOcean)
                                 Text("\(Int(progress * 100))% \(downloadProgress != nil ? "downloaded" : "sent")")
@@ -48,7 +50,6 @@ struct FirmwareUpdateView: View {
                                     .foregroundStyle(theme.textTertiary)
                                     .monospacedDigit()
                             }
-                            actionButton
                             if let message {
                                 Text(message)
                                     .font(AbundanceFont.caption)
@@ -61,7 +62,7 @@ struct FirmwareUpdateView: View {
                 .padding(AbundanceSpacing.lg)
             }
         }
-        .navigationTitle("Firmware update")
+        .navigationTitle("Updates")
         .task {
             removeLegacyDownloadCache()
         }
@@ -77,52 +78,32 @@ struct FirmwareUpdateView: View {
 
     // MARK: - Copy
 
-    private var headline: String {
-        if updateConfirmed { return "Camera updated to v\(verifiedVersion ?? "")" }
+    private var statusValue: String {
+        if updateConfirmed { return "Updated to v\(verifiedVersion ?? "")" }
         if isVerifying || awaitsInstalledVersionCheck { return "Installing…" }
+        if isDownloading { return "Downloading…" }
+        if isChecking { return "Checking…" }
         if let latestRelease {
             if let cameraVersion, cameraVersion == latestRelease.version {
-                return "Camera is up to date (v\(cameraVersion))"
+                return "Up to date"
             }
             if downloadedBundle != nil { return "Ready to update" }
             return latestRelease.critical ? "Critical update available" : "Update available"
         }
-        return "Check for update"
+        return "Not checked"
     }
 
-    /// Non-interactive version pair shown while an update is in play:
-    /// update available, ready to update, and installing.
-    @ViewBuilder private var versionChips: some View {
-        if let latestRelease, !updateConfirmed, cameraVersion != latestRelease.version {
-            HStack(spacing: AbundanceSpacing.xs) {
-                if let cameraVersion {
-                    versionChip("Current", cameraVersion)
-                }
-                versionChip("Available", latestRelease.version)
-            }
-        }
-    }
-
-    private func versionChip(_ label: String, _ version: String) -> some View {
-        HStack(spacing: AbundanceSpacing.xxs) {
+    private func row(_ label: String, _ value: String, danger: Bool = false) -> some View {
+        HStack {
             Text(label)
+                .font(AbundanceFont.caption)
                 .foregroundStyle(theme.textTertiary)
-            Text("v\(version)")
-                .foregroundStyle(theme.textPrimary)
+            Spacer()
+            Text(value)
+                .font(AbundanceFont.label)
+                .foregroundStyle(danger ? theme.textDanger : theme.textPrimary)
                 .monospacedDigit()
-        }
-        .font(AbundanceFont.label)
-        .padding(.horizontal, AbundanceSpacing.sm)
-        .padding(.vertical, AbundanceSpacing.xxs)
-        .abundanceGlassCapsule()
-    }
-
-    @ViewBuilder private var releaseNotes: some View {
-        if let notes = latestRelease?.notes, !updateConfirmed,
-           cameraVersion != latestRelease?.version {
-            Text("Firmware notes: \(notes)")
-                .font(AbundanceFont.bodyMedium)
-                .foregroundStyle(theme.textSecondary)
+                .multilineTextAlignment(.trailing)
         }
     }
 
@@ -143,25 +124,30 @@ struct FirmwareUpdateView: View {
 
     // MARK: - Actions
 
-    @ViewBuilder private var actionButton: some View {
+    /// Top-right staged action, in the Rescan-button register: check for
+    /// update -> download update -> update device.
+    @ViewBuilder private var headerAction: some View {
         switch firmwareUpdateAction {
         case .checkRelease:
-            Button("Check for update") { Task { await fetchLatestRelease() } }
-                .buttonStyle(AbundancePrimaryButtonStyle())
+            headerButton("Check for update") { await fetchLatestRelease() }
                 .disabled(isChecking)
         case .downloadRelease:
-            Button("Download to iPhone") { Task { await downloadLatestRelease() } }
-                .buttonStyle(AbundancePrimaryButtonStyle())
+            headerButton("Download update") { await downloadLatestRelease() }
         case .installRelease:
-            Button("Send to camera") { Task { await installDownloadedBundle() } }
-                .buttonStyle(AbundancePrimaryButtonStyle())
+            headerButton("Update device") { await installDownloadedBundle() }
                 .disabled(store.recordPhase != .idle)
         case .checkInstalledVersion:
-            Button("Check again") { Task { await verifyInstalledVersion() } }
-                .buttonStyle(AbundancePrimaryButtonStyle())
+            headerButton("Check again") { await verifyInstalledVersion() }
         case .none:
-            EmptyView()
+            ProgressView()
+                .tint(theme.textAccentOcean)
         }
+    }
+
+    private func headerButton(_ title: String, action: @escaping () async -> Void) -> some View {
+        Button(title) { Task { await action() } }
+            .font(AbundanceFont.label)
+            .foregroundStyle(theme.textAccentOcean)
     }
 
     private var firmwareUpdateAction: FirmwareUpdateAction {

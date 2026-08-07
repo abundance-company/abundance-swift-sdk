@@ -26,6 +26,11 @@ final class OffloadStore {
 
     private(set) var phases: [String: Phase] = [:]
 
+    /// True while Station upload owns deletion. Automatic drains stay quiet
+    /// because firmware rejects their acks with `409 station_enabled`.
+    /// Wired by DeviceStore.
+    var stationOwnsDeletion: () -> Bool = { false }
+
     /// Fired after each segment lands on disk, so the library view refreshes.
     var onSaved: (() -> Void)?
 
@@ -69,6 +74,11 @@ final class OffloadStore {
         defer { drainTask = nil }
         while drainRequested, !Task.isCancelled, let offload {
             drainRequested = false
+            // Station mode: the camera uploads and deletes on its own — an
+            // unprompted phone copy here just looks like a rogue offload.
+            // Re-checked per session because the flag refreshes async and a
+            // publish nudge can race it.
+            if stationOwnsDeletion() { return }
             guard let sessions = try? await offload.list() else {
                 // Unreachable (typically off the camera's Wi-Fi) — stop; the
                 // next connected event drains again.
@@ -84,6 +94,7 @@ final class OffloadStore {
             }
             for session in eligible {
                 guard !Task.isCancelled, !pausedSessions.contains(session.id) else { continue }
+                if stationOwnsDeletion() { return }
                 if await !run(session) { return } // transfer failed → wait for the next nudge
             }
         }
@@ -139,9 +150,11 @@ final class OffloadStore {
                 case .manifest:
                     phases[session.id] = .downloading(done: 0, total: session.segmentCount)
                 case .segment:
-                    if progress.acked {
-                        // The triple is verified on disk and deleted from the
-                        // device — it is safe to surface in the library now.
+                    // The completion emission (nil artifact) means the triple
+                    // is verified on disk and its ack was accepted. If Station
+                    // takes ownership mid-run, firmware rejects the ack with
+                    // `409 station_enabled`; the next nudge re-drains it.
+                    if progress.artifactName == nil {
                         ackedSegments += 1
                         onSaved?()
                     }

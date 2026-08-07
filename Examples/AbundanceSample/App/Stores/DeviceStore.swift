@@ -69,6 +69,54 @@ final class DeviceStore {
 
     var isPaired: Bool { device != nil }
 
+    /// Station ships in firmware 1.1.0; the endpoints 404 below that.
+    var supportsStation: Bool {
+        let version = device?.firmwareVersion.split(separator: ".").compactMap { Int($0) } ?? []
+        guard version.count >= 2 else { return false }
+        return version[0] > 1 || (version[0] == 1 && version[1] >= 1)
+    }
+
+    /// Station upload owns offload while enabled: the device rejects deletion
+    /// acks with `409 station_enabled`, so the automatic drain stays quiet
+    /// instead of churning failed transfers.
+    private(set) var stationUploadEnabled = false
+    /// Bumped on every `sessionPublished` event.
+    private(set) var publishedCount = 0
+    /// A Broker (base URL) is stored on the camera — the precondition for
+    /// reporting a configured Station upload destination.
+    private(set) var stationUploadConfigured = false
+
+    /// The Station destination (base URL + token) is a fact this sample
+    /// observes, never writes — only the customer backend that holds the
+    /// Broker token can replace it. The `enabled` switch is different:
+    /// `setUploadEnabled` needs no token, so pausing and resuming belongs
+    /// to whoever is standing at the camera. See `setStationUploadEnabled`.
+    func refreshStationUpload() async {
+        let wasEnabled = stationUploadEnabled
+        guard supportsStation, let device else {
+            stationUploadEnabled = false
+            stationUploadConfigured = false
+            if wasEnabled { downloads.drain() }
+            return
+        }
+        guard let status = try? await device.station.uploadStatus() else { return }
+        stationUploadEnabled = status.enabled
+        stationUploadConfigured = status.baseURL != nil
+        if wasEnabled && !status.enabled {
+            // Phone owns deletion again — resume draining the backlog.
+            downloads.drain()
+        }
+    }
+
+    /// Deliberate user action — the one place this sample flips the switch.
+    /// Pausing keeps the stored Broker target; `refreshStationUpload` then
+    /// resumes the phone-side drain because deletion authority came back.
+    func setStationUploadEnabled(_ enabled: Bool) async {
+        guard let device else { return }
+        _ = try? await device.station.setUploadEnabled(enabled)
+        await refreshStationUpload()
+    }
+
     private var eventTask: Task<Void, Never>?
     private var stopInFlight = false
     private let defaults: UserDefaults
@@ -84,6 +132,7 @@ final class DeviceStore {
         let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("Recordings", isDirectory: true)
         self.downloads = OffloadStore(directory: dir)
+        downloads.stationOwnsDeletion = { [weak self] in self?.stationUploadEnabled ?? false }
     }
 
     // MARK: - Pairing & reconnecting
@@ -173,8 +222,12 @@ final class DeviceStore {
         case .connected:
             isConnected = true
             // The list endpoint is the authoritative backlog: drain it on
-            // every (re)connect so a missed nudge loses nothing.
-            downloads.drain()
+            // every (re)connect so a missed nudge loses nothing — unless
+            // Station upload owns the card right now.
+            Task {
+                await refreshStationUpload()
+                if !stationUploadEnabled { downloads.drain() }
+            }
 
         case .snapshot(let snap):
             apply(snap)
@@ -186,11 +239,14 @@ final class DeviceStore {
             apply(snap)
 
         case .sessionPublished:
-            downloads.drain()
+            // Views watch this to refetch the device list — in Station mode no
+            // download phase ever changes, so nothing else would tell them.
+            publishedCount += 1
+            if !stationUploadEnabled { downloads.drain() }
 
         case .segmentReady:
             // A hint only — sessions become downloadable once published.
-            downloads.drain()
+            if !stationUploadEnabled { downloads.drain() }
 
         case .deviceError(let code, let message, let snap):
             switch code {

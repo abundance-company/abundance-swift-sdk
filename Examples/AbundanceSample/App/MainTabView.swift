@@ -46,6 +46,18 @@ struct MainTabView: View {
         .task(id: store.isPaired) {
             if store.isPaired { store.open() }
         }
+        #if DEBUG
+        .task {
+            // `-uiPairHost <ip>` automates the manual "Don't see your camera?"
+            // pairing path so simulator smoke tests can drive a real device
+            // over the LAN.
+            let args = ProcessInfo.processInfo.arguments
+            if !store.isPaired,
+               let i = args.firstIndex(of: "-uiPairHost"), i + 1 < args.count {
+                await store.pair(host: args[i + 1])
+            }
+        }
+        #endif
     }
 
     /// DEBUG-only: `-uiTab recordings|settings` opens on that tab so simulator
